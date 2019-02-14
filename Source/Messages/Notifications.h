@@ -14,24 +14,34 @@ public:
 
     virtual ~Notifications();
 
-    void Create();
-
-    void Dispose();
-
-    void HandleNewNotification(StringHash eventType, VariantMap& eventData);
-
-    void HandleUpdate(StringHash eventType, VariantMap& eventData);
-
-    void HandleGameEnd(StringHash eventType, VariantMap& eventData);
-
-protected:
+private:
     virtual void Init();
 
-private:
-
+    /**
+     * Subscribe to notification events
+     */
     void SubscribeToEvents();
 
-    UIElement* _baseElement;
+    /**
+     * Handle ShowNotification event
+     */
+    void HandleNewNotification(StringHash eventType, VariantMap& eventData);
 
-    Vector<WeakPtr<Text>> _messages;
+    /**
+     * Handle message displaying and animations
+     */
+    void HandleUpdate(StringHash eventType, VariantMap& eventData);
+
+    /**
+     * Handle game end event
+     */
+    void HandleGameEnd(StringHash eventType, VariantMap& eventData);
+
+    /**
+     * List of all active messages
+     */
+    Vector<SharedPtr<Text>> _messages;
+    SharedPtr<ObjectAnimation> notificationAnimation;
+    SharedPtr<ValueAnimation> positionAnimation;
+    SharedPtr<ValueAnimation> opacityAnimation;
 };

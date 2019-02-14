@@ -1,6 +1,8 @@
 #include <Urho3D/Urho3DAll.h>
 #include "Loading.h"
 #include "../MyEvents.h"
+#include "../Messages/Achievements.h"
+#include "../SceneManager.h"
 
 using namespace Levels;
 
@@ -16,6 +18,9 @@ Loading::~Loading()
 
 void Loading::Init()
 {
+    // Disable achievement showing for this level
+    GetSubsystem<Achievements>()->SetShowAchievements(false);
+
     BaseLevel::Init();
 
     // Create the scene content
@@ -26,6 +31,8 @@ void Loading::Init()
 
     // Subscribe to global events for camera movement
     SubscribeToEvents();
+
+    GetSubsystem<SceneManager>()->LoadScene(GetSubsystem<FileSystem>()->GetProgramDir() + "Data/Scenes/Scene.xml");
 }
 
 void Loading::CreateScene()
@@ -59,17 +66,18 @@ void Loading::CreateUI()
 
     // Set random rotation in degrees and random scale
     sprite->SetRotation(Random() * 360.0f);
-    sprite->SetScale(Random(1.0f) + 0.5f);
 
     // Set random color and additive blending mode
     sprite->SetColor(Color(Random(0.5f) + 0.5f, Random(0.5f) + 0.5f, Random(0.5f) + 0.5f));
     sprite->SetBlendMode(BLEND_ADD);
+
 
     // Add as a child of the root UI element
     ui->GetRoot()->AddChild(sprite);
 
     SharedPtr<ObjectAnimation> logoAnimation(new ObjectAnimation(context_));
     SharedPtr<ValueAnimation> rotation(new ValueAnimation(context_));
+
     // Use spline interpolation method
     rotation->SetInterpolationMethod(IM_LINEAR);
     // Set spline tension
@@ -80,27 +88,33 @@ void Loading::CreateUI()
 
     sprite->SetObjectAnimation(logoAnimation);
 
-    /*Text* text = ui->GetRoot()->CreateChild<Text>();
-    text->SetHorizontalAlignment(HA_RIGHT);
-    text->SetPosition(IntVector2(-20, -20));
-    text->SetVerticalAlignment(VA_BOTTOM);
-    text->SetStyleAuto();
-    text->SetText("Loading...");
+    _status = ui->GetRoot()->CreateChild<Text>();
+    _status->SetHorizontalAlignment(HA_LEFT);
+    _status->SetVerticalAlignment(VA_BOTTOM);
+    _status->SetPosition(20, -20);
+    _status->SetStyleAuto();
+    _status->SetText("Progress: 0%");
+    _status->SetTextEffect(TextEffect::TE_STROKE);
+    _status->SetFontSize(16);
+    _status->SetColor(Color(0.8f, 0.8f, 0.2f));
+    _status->SetBringToBack(true);
+
 
     SharedPtr<ObjectAnimation> animation(new ObjectAnimation(context_));
     SharedPtr<ValueAnimation> colorAnimation(new ValueAnimation(context_));
     // Use spline interpolation method
-    colorAnimation->SetInterpolationMethod(IM_SPLINE);
+    colorAnimation->SetInterpolationMethod(IM_LINEAR);
     // Set spline tension
     colorAnimation->SetSplineTension(0.7f);
-    colorAnimation->SetKeyFrame(0.0f, IntVector2(-20, -20));
-    colorAnimation->SetKeyFrame(1.0f, IntVector2(-20, -40));
-    colorAnimation->SetKeyFrame(2.0f, IntVector2(-40, -40));
-    colorAnimation->SetKeyFrame(3.0f, IntVector2(-40, -20));
-    colorAnimation->SetKeyFrame(4.0f, IntVector2(-20, -20));
-    animation->AddAttributeAnimation("Position", colorAnimation);
+    colorAnimation->SetKeyFrame(0.0f, Color::RED);
+    colorAnimation->SetKeyFrame(1.0f, Color::YELLOW);
+    colorAnimation->SetKeyFrame(2.0f, Color::GREEN);
+    colorAnimation->SetKeyFrame(3.0f, Color::GRAY);
+    colorAnimation->SetKeyFrame(4.0f, Color::BLUE);
+    colorAnimation->SetKeyFrame(5.0f, Color::RED);
+    animation->AddAttributeAnimation("Color", colorAnimation);
 
-    text->SetObjectAnimation(animation);*/
+    _status->SetObjectAnimation(animation);
 }
 
 void Loading::SubscribeToEvents()
@@ -116,15 +130,20 @@ void Loading::HandleUpdate(StringHash eventType, VariantMap& eventData)
         input->SetMouseVisible(false);
     }
 
-    if (timer.GetMSec(false) > 3000) {
+    float progress = GetSubsystem<SceneManager>()->GetProgress();
+    _status->SetText(String((int)(progress * 100)) + "% " + GetSubsystem<SceneManager>()->GetStatusMessage() + "...");
+    //if (timer.GetMSec(false) > 3000) {
+    if (progress >= 1.0f) {
         SendEvent("EndLoading");
         UnsubscribeFromEvent(E_UPDATE);
+        GetSubsystem<SceneManager>()->ResetProgress();
     }
 }
 
 void Loading::HandleEndLoading(StringHash eventType, VariantMap& eventData)
 {
-    data_["Name"] = "Level";
-    SendEvent(MyEvents::E_SET_LEVEL, data_);
-    UnsubscribeFromEvent(E_UPDATE);
+	UnsubscribeFromEvent(E_UPDATE);
+	VariantMap data = GetEventDataMap();
+	data["Name"] = "Level";
+    SendEvent(MyEvents::E_SET_LEVEL, data);
 }

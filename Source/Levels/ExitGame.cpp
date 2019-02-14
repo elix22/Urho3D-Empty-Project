@@ -1,6 +1,8 @@
 #include <Urho3D/Urho3DAll.h>
 #include "ExitGame.h"
 #include "../MyEvents.h"
+#include "../Messages/Achievements.h"
+#include "../Global.h"
 
 using namespace Levels;
 
@@ -18,6 +20,9 @@ ExitGame::~ExitGame()
 
 void ExitGame::Init()
 {
+    // Disable achievement showing for this level
+    GetSubsystem<Achievements>()->SetShowAchievements(false);
+
     CreateUI();
 }
 
@@ -35,12 +40,15 @@ void ExitGame::HandleUpdate(StringHash eventType, VariantMap& eventData)
 
 void ExitGame::CreateUI()
 {
+    auto* localization = GetSubsystem<Localization>();
     UI* ui = GetSubsystem<UI>();
-    ResourceCache* cache = GetSubsystem<ResourceCache>();
+    auto *cache = GetSubsystem<ResourceCache>();
+    auto *font = cache->GetResource<Font>(APPLICATION_FONT);
     
     Text* text = ui->GetRoot()->CreateChild<Text>();
     text->SetHorizontalAlignment(HA_CENTER);
     text->SetVerticalAlignment(VA_CENTER);
     text->SetStyleAuto();
-    text->SetText("Exiting game...");
+    text->SetFont(font, 16);
+    text->SetText(localization->Get("EXITING_GAME"));
 }

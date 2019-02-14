@@ -17,7 +17,7 @@ namespace Levels {
         void HandleUpdate(StringHash eventType, VariantMap& eventData);
 
     protected:
-        virtual void Init();
+        void Init () override;
 
     private:
         void CreateScene();
@@ -28,6 +28,7 @@ namespace Levels {
 
         void HandleEndLoading(StringHash eventType, VariantMap& eventData);
 
+        SharedPtr<Text> _status;
         Timer timer;
     };
 }

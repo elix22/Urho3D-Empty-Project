@@ -14,25 +14,16 @@ public:
 
     virtual ~Message();
 
-    void Create();
+private:
+    void Init();
 
-    void Dispose();
-
-    void HandleOkButton(StringHash eventType, VariantMap& eventData);
-
+    /**
+     * Handle ShowMessage event
+     */
     void HandleShowMessage(StringHash eventType, VariantMap& eventData);
 
-protected:
-    virtual void Init();
-
-private:
-
+    /**
+     * Subscribe to message events
+     */
     void SubscribeToEvents();
-
-    UIElement* _baseElement;
-    SharedPtr<Button> _okButton;
-    SharedPtr<Text> _title;
-    SharedPtr<Text> _message;
-
-
 };

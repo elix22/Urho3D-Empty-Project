@@ -3,8 +3,13 @@
  */
 void Start()
 {
-    log.Info("Minimap.as loaded");
-    SubscribeToEvent("LevelLoaded", "HandleLevelLoaded");
+    log.Info("LevelLoader.as START");
+    SubscribeToEvent("LevelChangingFinished", "HandleLevelLoaded");
+}
+
+void Stop()
+{
+	log.Info("LevelLoader.as STOP");
 }
 
 /**
@@ -12,7 +17,8 @@ void Start()
  */
 void HandleLevelLoaded(StringHash eventType, VariantMap& eventData)
 {
-    String levelName = eventData["Name"].GetString();
+    String previousLevelName = eventData["From"].GetString();
+    String levelName = eventData["To"].GetString();
 
     VariantMap data;
     data["Message"] = "Level '" + levelName + "' loaded!";

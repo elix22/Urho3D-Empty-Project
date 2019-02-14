@@ -2,24 +2,22 @@
 
 #include <Urho3D/Urho3DAll.h>
 #include "../BaseLevel.h"
-#include "../Globals.h"
 #include <vector>
 
 namespace Levels {
 
     class MainMenu : public BaseLevel
     {
-        URHO3D_OBJECT(MainMenu, BaseLevel);
+    URHO3D_OBJECT(MainMenu, BaseLevel);
 
     public:
         /// Construct.
         MainMenu(Context* context);
 
-        virtual ~MainMenu();
-        void HandleUpdate(StringHash eventType, VariantMap& eventData);
+        ~MainMenu();
 
     protected:
-        virtual void Init();
+        void Init () override;
 
     private:
         void CreateScene();
@@ -28,8 +26,16 @@ namespace Levels {
 
         void SubscribeToEvents();
 
-        void HandleStartGame(StringHash eventType, VariantMap& eventData);
+        SharedPtr<Button> _newGameButton;
+        SharedPtr<Button> _settingsButton;
+        SharedPtr<Button> _achievementsButton;
+        SharedPtr<Button> _creditsButton;
+        SharedPtr<Button> _exitButton;
 
-        SharedPtr<Button> _startButton;
+        Button* CreateButton(const String& text, int width, IntVector2 position);
+
+        bool _active;
+
+        bool _showGUI;
     };
 }

@@ -13,12 +13,13 @@ namespace Levels {
         Level(Context* context);
 
         virtual ~Level();
+        void HandlePhysicsPrestep(StringHash eventType, VariantMap& eventData);
         void HandlePostUpdate(StringHash eventType, VariantMap& eventData);
 
     protected:
-        virtual void Init();
+        virtual void Init () override;
 
-        virtual void OnLoaded();
+        void OnLoaded();
 
     private:
         void CreateScene();
@@ -26,13 +27,31 @@ namespace Levels {
         void CreateUI();
 
         void SubscribeToEvents();
+        void UnsubscribeToEvents();
 
-        SharedPtr<Node> _controlledNode;
-        unsigned int _id;
+        void StartAudio();
+        void StopAllAudio();
 
-        bool shouldReturn;
-        String returnMessage;
+        void HandleKeyDown(StringHash eventType, VariantMap& eventData);
+        void HandleKeyUp(StringHash eventType, VariantMap& eventData);
+        void HandleWindowClosed(StringHash eventType, VariantMap& eventData);
 
-        WeakPtr<Node> _characterCameraNode;
+        void HandleControllerConnected(StringHash eventType, VariantMap& eventData);
+        void HandleControllerDisconnected(StringHash eventType, VariantMap& eventData);
+
+        void HandleVideoSettingsChanged(StringHash eventType, VariantMap& eventData);
+
+        Node* CreateControllableObject();
+
+        bool _showScoreboard;
+
+        /**
+        * Player variables
+        */
+        HashMap<int, SharedPtr<Node>> _players;
+
+        SharedPtr<SplinePath> _path;
+
+        HashMap<Node*, SharedPtr<Node>> _playerLabels;
     };
 }
