@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/ArnisLielturks/Urho3D-Project-Template/tree/master.svg?style=svg)](https://circleci.com/gh/ArnisLielturks/Urho3D-Empty-Project/tree/master)
+[![Build Status](https://travis-ci.org/ArnisLielturks/Urho3D-Project-Template.svg?branch=master)](https://travis-ci.org/ArnisLielturks/Urho3D-Project-Template)
 
 # Urho3D-Project-Template
 App template with the following features:
@@ -18,7 +19,7 @@ Make sure that the URHO3D_HOME environment variable is set and points to the rig
 ```
 git clone https://github.com/ArnisLielturks/Urho3D-Empty-Project.git
 cd Urho3D-Empty-Project
-./cmake_generic.sh build
+./script/cmake_generic.sh build
 cd  build
 make
 ```
@@ -33,3 +34,6 @@ And of course here's the quick preview of how it should look in the end:
 
 # How to extend the functionality?
 Read the wiki: https://github.com/ArnisLielturks/Urho3D-Empty-Project/wiki
+
+
+script/dockerized.sh android ./gradlew -P ANDROID_ABI=armeabi-v7a -P URHO3D_LIB_TYPE=SHARED -P URHO3D_HOME= build

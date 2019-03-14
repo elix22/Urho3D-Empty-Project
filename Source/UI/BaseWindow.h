@@ -27,4 +27,15 @@ protected:
      * Get rid of the window
      */
     virtual void Dispose() {}
+
+    /**
+     * Creates transparent Sprite in the back
+     * All windows should be created as a child for this overlay
+     */
+    Sprite* CreateOverlay();
+
+    /**
+     * Transparent overlay object
+     */
+    SharedPtr<Sprite> _overlay;
 };
